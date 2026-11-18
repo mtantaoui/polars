@@ -1,0 +1,17 @@
+# EXPERIMENT (simdly): before/after timings of Polars' float math
+# expressions. Not part of a PR.
+[package]
+name = "simdly-bench"
+version = "0.0.0"
+edition = { workspace = true }
+publish = false
+
+[dependencies]
+polars = { workspace = true, features = ["lazy", "trigonometry", "log", "nightly"] }
+polars-config = { workspace = true }
+polars-core = { workspace = true }
+# The accuracy reference.
+libm = { workspace = true }
+
+[features]
+simdly = ["polars/simdly"]

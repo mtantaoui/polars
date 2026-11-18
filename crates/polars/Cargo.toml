@@ -61,6 +61,7 @@ simd = [
   "polars-ops?/simd",
 ]
 avx512 = ["polars-core/avx512"]
+simdly = ["polars-ops?/simdly", "polars-expr?/simdly"]
 nightly = [
   "polars-core/nightly",
   "polars-io?/nightly",

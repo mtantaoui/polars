@@ -10,6 +10,8 @@ description = "More operations on Polars data structures"
 
 [dependencies]
 polars-arrow = { workspace = true }
+# EXPERIMENT: simdly SIMD math kernels.
+simdly = { path = "../../../simdly", optional = true, default-features = false, features = ["std"] }
 polars-buffer = { workspace = true }
 polars-compute = { workspace = true }
 polars-core = { workspace = true, features = ["algorithm_group_by", "zip_with"] }
@@ -56,6 +58,7 @@ version_check = { workspace = true }
 
 [features]
 simd = ["argminmax/nightly_simd"]
+simdly = ["dep:simdly"]
 nightly = ["polars-utils/nightly"]
 dtype-categorical = ["polars-core/dtype-categorical"]
 dtype-date = ["polars-core/dtype-date", "polars-core/temporal", "polars-defs/dtype-date"]

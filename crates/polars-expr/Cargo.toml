@@ -13,6 +13,8 @@ version_check = { workspace = true }
 
 [dependencies]
 bitflags = { workspace = true }
+# EXPERIMENT: simdly SIMD math kernels.
+simdly = { path = "../../../simdly", optional = true, default-features = false, features = ["std"] }
 chrono-tz = { workspace = true, optional = true }
 hashbrown = { workspace = true }
 libloading = { workspace = true, optional = true }
@@ -38,6 +40,7 @@ serde = { workspace = true, optional = true }
 
 [features]
 nightly = ["polars-core/nightly", "polars-ops/nightly", "polars-plan/nightly"]
+simdly = ["dep:simdly", "polars-ops/simdly"]
 parquet = ["polars-io/parquet", "polars-plan/parquet"]
 temporal = [
   "dtype-datetime",

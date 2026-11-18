@@ -63,6 +63,8 @@ mod rolling;
 pub mod round;
 #[cfg(feature = "search_sorted")]
 mod search_sorted;
+#[cfg(feature = "simdly")]
+mod simdly_math;
 mod strings;
 #[cfg(feature = "to_dummies")]
 mod to_dummies;
@@ -141,6 +143,8 @@ pub use rolling::*;
 pub use round::*;
 #[cfg(feature = "search_sorted")]
 pub use search_sorted::*;
+#[cfg(feature = "simdly")]
+pub use simdly_math::*;
 pub use strings::*;
 #[cfg(feature = "to_dummies")]
 pub use to_dummies::*;

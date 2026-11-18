@@ -17,10 +17,18 @@ pub(super) fn apply_trigonometric_function(
         },
         Float32 => {
             let ca = s.f32().unwrap();
+            #[cfg(feature = "simdly")]
+            if let Some(out) = simdly_trigonometric_function(ca, trig_function) {
+                return Ok(out);
+            }
             apply_trigonometric_function_to_float(ca, trig_function)
         },
         Float64 => {
             let ca = s.f64().unwrap();
+            #[cfg(feature = "simdly")]
+            if let Some(out) = simdly_trigonometric_function(ca, trig_function) {
+                return Ok(out);
+            }
             apply_trigonometric_function_to_float(ca, trig_function)
         },
         dt if dt.is_primitive_numeric() => {
@@ -29,6 +37,37 @@ pub(super) fn apply_trigonometric_function(
         },
         dt => polars_bail!(op = "trigonometry", dt),
     }
+}
+
+/// EXPERIMENT: the functions simdly has, through its slice kernels.
+#[cfg(feature = "simdly")]
+fn simdly_trigonometric_function<T>(
+    ca: &ChunkedArray<T>,
+    trig_function: IRTrigonometricFunction,
+) -> Option<Column>
+where
+    T: PolarsFloatType,
+    [T::Native]: simdly::SliceMath<T::Native>,
+    ChunkedArray<T>: IntoColumn,
+{
+    use IRTrigonometricFunction as F;
+    use simdly::SliceMath;
+    let op: fn(&[T::Native]) -> Vec<T::Native> = match trig_function {
+        F::Cos => <[T::Native] as SliceMath<T::Native>>::cos,
+        F::Sin => <[T::Native] as SliceMath<T::Native>>::sin,
+        F::Tan => <[T::Native] as SliceMath<T::Native>>::tan,
+        F::ArcCos => <[T::Native] as SliceMath<T::Native>>::acos,
+        F::ArcSin => <[T::Native] as SliceMath<T::Native>>::asin,
+        F::ArcTan => <[T::Native] as SliceMath<T::Native>>::atan,
+        F::Cosh => <[T::Native] as SliceMath<T::Native>>::cosh,
+        F::Sinh => <[T::Native] as SliceMath<T::Native>>::sinh,
+        F::Tanh => <[T::Native] as SliceMath<T::Native>>::tanh,
+        F::ArcCosh => <[T::Native] as SliceMath<T::Native>>::acosh,
+        F::ArcSinh => <[T::Native] as SliceMath<T::Native>>::asinh,
+        F::ArcTanh => <[T::Native] as SliceMath<T::Native>>::atanh,
+        _ => return None,
+    };
+    Some(polars_ops::series::simdly_apply(ca, op).into_column())
 }
 
 pub(super) fn apply_arctan2(s: &mut [Column]) -> PolarsResult<Column> {

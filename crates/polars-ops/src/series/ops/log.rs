@@ -89,7 +89,19 @@ pub trait LogSeries: SeriesSealed {
             },
             #[cfg(feature = "dtype-f16")]
             Float16 => Ok(s.f16().unwrap().apply_values(|v| v.ln_1p()).into_series()),
+            #[cfg(feature = "simdly")]
+            Float32 => Ok(
+                super::simdly_apply(s.f32().unwrap(), |v| simdly::SliceMath::log1p(v))
+                    .into_series(),
+            ),
+            #[cfg(feature = "simdly")]
+            Float64 => Ok(
+                super::simdly_apply(s.f64().unwrap(), |v| simdly::SliceMath::log1p(v))
+                    .into_series(),
+            ),
+            #[cfg(not(feature = "simdly"))]
             Float32 => Ok(s.f32().unwrap().apply_values(|v| v.ln_1p()).into_series()),
+            #[cfg(not(feature = "simdly"))]
             Float64 => Ok(s.f64().unwrap().apply_values(|v| v.ln_1p()).into_series()),
             #[cfg(feature = "dtype-decimal")]
             Decimal(_, _) => s.cast(&DataType::Float64)?.log1p(),
@@ -112,7 +124,17 @@ pub trait LogSeries: SeriesSealed {
             },
             #[cfg(feature = "dtype-f16")]
             Float16 => Ok(s.f16().unwrap().apply_values(|v| v.exp()).into_series()),
+            #[cfg(feature = "simdly")]
+            Float32 => Ok(
+                super::simdly_apply(s.f32().unwrap(), |v| simdly::SliceMath::exp(v)).into_series(),
+            ),
+            #[cfg(feature = "simdly")]
+            Float64 => Ok(
+                super::simdly_apply(s.f64().unwrap(), |v| simdly::SliceMath::exp(v)).into_series(),
+            ),
+            #[cfg(not(feature = "simdly"))]
             Float32 => Ok(s.f32().unwrap().apply_values(|v| v.exp()).into_series()),
+            #[cfg(not(feature = "simdly"))]
             Float64 => Ok(s.f64().unwrap().apply_values(|v| v.exp()).into_series()),
             #[cfg(feature = "dtype-decimal")]
             Decimal(_, _) => s.cast(&DataType::Float64)?.exp(),
@@ -139,11 +161,21 @@ pub trait LogSeries: SeriesSealed {
                 .unwrap()
                 .apply_values(|v| erf_f64(v.into()).into())
                 .into_series()),
+            #[cfg(feature = "simdly")]
+            Float32 => Ok(
+                super::simdly_apply(s.f32().unwrap(), |v| simdly::SliceMath::erf(v)).into_series(),
+            ),
+            #[cfg(feature = "simdly")]
+            Float64 => Ok(
+                super::simdly_apply(s.f64().unwrap(), |v| simdly::SliceMath::erf(v)).into_series(),
+            ),
+            #[cfg(not(feature = "simdly"))]
             Float32 => Ok(s
                 .f32()
                 .unwrap()
                 .apply_values(|v| erf_f64(v as f64) as f32)
                 .into_series()),
+            #[cfg(not(feature = "simdly"))]
             Float64 => Ok(s.f64().unwrap().apply_values(erf_f64).into_series()),
             #[cfg(feature = "dtype-decimal")]
             Decimal(_, _) => s.cast(&DataType::Float64)?.erf(),

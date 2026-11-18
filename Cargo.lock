@@ -3379,6 +3379,7 @@ dependencies = [
  "recursive",
  "regex",
  "serde",
+ "simdly",
  "version_check",
 ]
 
@@ -3625,6 +3626,7 @@ dependencies = [
  "schemars",
  "serde",
  "serde_json",
+ "simdly",
  "strum_macros",
  "unicode-normalization",
  "unicode-reverse",
@@ -5026,6 +5028,20 @@ checksum = "11031e251abf8611c80f460e19dbdeb54a66db918e49c65a7065b46ac7aec520"
 dependencies = [
  "rustc_version",
  "simdutf8",
+]
+
+[[package]]
+name = "simdly"
+version = "0.1.2"
+
+[[package]]
+name = "simdly-bench"
+version = "0.0.0"
+dependencies = [
+ "libm",
+ "polars",
+ "polars-config",
+ "polars-core",
 ]
 
 [[package]]

@@ -229,10 +229,20 @@ pub(super) fn cbrt(base: &Column) -> PolarsResult<Column> {
         },
         DataType::Float32 => {
             let ca = base.f32().unwrap();
+            #[cfg(feature = "simdly")]
+            return Ok(
+                polars_ops::series::simdly_apply(ca, |v| simdly::SliceMath::cbrt(v)).into_column(),
+            );
+            #[cfg(not(feature = "simdly"))]
             cbrt_on_floats(ca)
         },
         DataType::Float64 => {
             let ca = base.f64().unwrap();
+            #[cfg(feature = "simdly")]
+            return Ok(
+                polars_ops::series::simdly_apply(ca, |v| simdly::SliceMath::cbrt(v)).into_column(),
+            );
+            #[cfg(not(feature = "simdly"))]
             cbrt_on_floats(ca)
         },
         dt => {
@@ -243,6 +253,8 @@ pub(super) fn cbrt(base: &Column) -> PolarsResult<Column> {
     }
 }
 
+// EXPERIMENT: only Float16 uses it with `simdly`.
+#[cfg_attr(feature = "simdly", allow(dead_code))]
 fn cbrt_on_floats<T>(base: &ChunkedArray<T>) -> PolarsResult<Column>
 where
     T: PolarsFloatType,
